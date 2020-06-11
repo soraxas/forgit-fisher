@@ -28,8 +28,16 @@ end
 function __fish_forgit_needs_command
     # Figure out if the current invocation already has a command.    
     set -l cmd (commandline -opc)
+
     set -e cmd[1]
     or return 0
+
+    test "$cmd[1]" = $__FISH_FORGIT_ALIAS_NAME
+    and set -e cmd[1]
+    
+    test "$cmd[1]" = forgit
+    and set -e cmd[1]
+
     if set -q cmd[1]
         echo $cmd[1]
         return 1
@@ -40,6 +48,7 @@ end
 function forgit
     set -l __forgit_alias_main_pattern "!f() { fish -c 'forgit '\$@; }; f"
     
+    ##### alias subcommand
     if test (count $argv) -ge 2
         if contains -- --setup-alias $argv
             # echo "Going to execute:"
@@ -63,8 +72,9 @@ function forgit
             set -xU __FISH_FORGIT_ALIAS_NAME "$argv[2]"
             return
         end
-    end
-    if contains -- --cleanup-alias $argv
+
+    ##### cleanup alias subcommand
+    else if contains -- --cleanup-alias $argv
         # cleanup alias
         # git config --global alias.$argv[2] "!f() { fish -c \"forgit \"\$@; }; f"
         # echo $__forgit_alias_pattern
@@ -98,24 +108,28 @@ function forgit
         
         set -e __FISH_FORGIT_ALIAS_NAME
         return
-    end
-    if contains -- --complete $argv
-        for cmd in $__forgit_commands
+    
+    ##### completions subcommand
+    else if contains -- --complete $argv
+        # store all the first level commands
 
-            set -l __forgit_commands_first_tokens_only (string replace -r " .*\$" "" $__forgit_commands)
+        # all commands
+        echo -- "-n \"__fish_forgit_needs_command\" -xa \"$__forgit_commands\""
 
-            set -l try_split (string split ' ' $cmd)
-            if test (count $try_split) -gt 1
-                # is a subcommand
-                echo -- "-n \"__fish_forgit_last_cmd_match $try_split[1]\" -xa \"$try_split[2]\""
-                set -l num_subcmds (echo $__forgit_commands_first_tokens_only | grep -o -i $try_split[1] | wc -l)
-                echo -- "-n \"__fish_forgit_needs_command\" -xa \"$try_split[1]\" -d \"Subcommands: $num_subcmds\""
-            else
-                echo -- "-n \"__fish_forgit_needs_command\" -xa \"$try_split[1]\""
-            end
-        end 
+        # commands with subcommand
+        set -l cmds_with_subcmd (string replace -f -r " .*\$" "" $__forgit_commands | sort | uniq --count \
+                                | string replace -r '^\s+([0-9]+)\s+(.*)\s*' '$2\tSubcommands: $1' | string escape)
+        echo -- "-n \"__fish_forgit_needs_command\" -xa \"$cmds_with_subcmd\""
+
+        # add subcommand completions
+        for subcommand in (string match "* *" $__forgit_commands)
+            set -l split_cmd (string split ' ' $subcommand)
+            echo -- "-n \"__fish_forgit_last_cmd_match $split_cmd[1]\" -xa \"$split_cmd[2]\""
+        end
+
+        # completions for options
         for cmd in $__forgit_commands_options
-            printf -- "-l %s -d \"%s\"\n" (string split ':' $cmd)
+            printf -- "-n \"\" -l %s -d \"%s\"\n" (string split ':' $cmd)
         end 
         return
     end
