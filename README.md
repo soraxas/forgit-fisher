@@ -1,6 +1,6 @@
 <h1 align="center">forgit - fisher plugin</h1>
 <p align="center">
-    <em>Fisher plugin utility tool for using git interactively. Powered by <a href="https://github.com/wfxr/forgit">wfxr/forgit</a>.</em>
+    <em>Fisher plugin, utility tool for using git interactively. Powered by <a href="https://github.com/wfxr/forgit">wfxr/forgit</a>.</em>
 </p>
 
 This tool is designed to [forgit](https://github.com/wfxr/forgit). 
