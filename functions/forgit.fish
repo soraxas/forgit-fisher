@@ -36,16 +36,23 @@ end
 function __fish_forgit_needs_command
     # Figure out if the current invocation already has a command.    
     set -l cmd (commandline -opc)
-
+    # remove git prefix
     set -e cmd[1]
     or return 0
+    test -z "$cmd"
+    and return 0
 
-    test "$cmd[1]" = "$__FISH_FORGIT_ALIAS_NAME"
-    and set -e cmd[1]
-    
+    # remove the forgit prefix
+    ## core `forgit` subcommand
     test "$cmd[1]" = "forgit"
     and set -e cmd[1]
+    ## Check aliases for `forgit` (taken from git.fish completions file)
+    set -l varname __fish_git_alias_(string escape --style=var -- $cmd)
+    set -q $varname
+    and test $$varname = "forgit"
+    and set -e cmd[1]
 
+    # already has command
     if set -q cmd[1]
         echo $cmd[1]
         return 1
