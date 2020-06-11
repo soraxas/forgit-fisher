@@ -14,7 +14,8 @@ set __forgit_commands (string replace --all '::' ' ' $__forgit_commands)
 
 set __forgit_commands_options "setup-alias:Setup <ALIAS> as git's alias" \
                               "cleanup-alias:Cleanup alias created by forgit in .gitconfig" \
-                              "complete:Provide completions for fish (no need to manual run)"
+                              "complete:Provide completions for fish (no need to manual run)" \
+                              "setup-git-workaround:Setup git-subcommand completion workaround"
 
 function __fish_forgit_last_cmd_match
     set -l cmd (commandline -opc)
@@ -132,6 +133,28 @@ function forgit
             printf -- "-n \"\" -l %s -d \"%s\"\n" (string split ':' $cmd)
         end 
         return
+    
+    ##### setup git-subcomand workaround
+    else if contains -- --setup-git-workaround $argv
+
+        # remove previous workaround file
+        if test -e "$__FISH_FORGIT_GIT_COMPLETION_WORKAROUND_PATH"
+            echo "Removing $__FISH_FORGIT_GIT_COMPLETION_WORKAROUND_PATH"
+            command rm "$__FISH_FORGIT_GIT_COMPLETION_WORKAROUND_PATH"
+            test $status -eq 0
+            or echo "ERROR occured when removing workaround file"
+        end
+
+        # add a placeholder executable file in the first PATH folder
+        set -l folder $PATH[1]
+        set -l executable_path $folder/git-forgit
+
+        touch $executable_path
+        and echo -e '#!/usr/bin/env fish\nforgit $argv' > $executable_path
+        and chmod +x $executable_path
+        and set -xU __FISH_FORGIT_GIT_COMPLETION_WORKAROUND_PATH $executable_path
+
+        return
     end
 
 
@@ -150,6 +173,7 @@ function forgit
         printf "         --setup-alias <ALIAS>\t%s\n" "Setup <ALIAS> as git's alias. "
         printf "         --cleanup-alias\t%s\n" "Cleanup alias created by forgit in .gitconfig"
         printf "         --complete\t\t%s\n" "Provide completions for fish"
+        printf "         --setup-git-workaround\t%s\n" "Setup git-subcommand completion workaround"
         return 1
     end
 
