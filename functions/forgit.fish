@@ -1,6 +1,13 @@
 set -x FORGIT_NO_ALIASES 1
+
+set -l _fisher_path "$fisher_config"
+test -n "$_fisher_path"
+or set -l _fisher_path "$HOME/.config/fisher"
+
+set -l forgit_src_path $_fisher_path/github.com/wfxr/forgit/forgit.plugin.fish
+echo $forgit_src_path
 # source but replace its functions within __ namespace
-grep -P -v '^complet.*__fish_git_using_command.*(add|commit).*__fish_git_files' ~/git-repo/forgit/forgit.plugin.fish | sed 's/forgit::/__forgit::/' | source
+grep -P -v '^complet.*__fish_git_using_command.*(add|commit).*__fish_git_files' $forgit_src_path | sed 's/forgit::/__forgit::/' | source
 
 # get all defined functions by forgit
 set __forgit_commands (functions --all | string match -r "^__forgit::.*")
