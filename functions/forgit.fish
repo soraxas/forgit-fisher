@@ -162,23 +162,26 @@ function forgit
     contains -- $try_merge $__forgit_commands
     and set -e argv[1]; and set argv[1] $try_merge
 
-    contains -- $argv[1] $__forgit_commands
+    and contains -- $argv[1] $__forgit_commands
     set -l is_valid_cmd $status
 
     if test $is_valid_cmd -ne 0
         # if the provided command can uniquely expand to one of the available commands,
         # we will still allow the commands to work.
         # e.g., `forgit a` will be able to expand to `forgit add`
-        set -l possible_cmd (string match "$argv[1]*" $__forgit_commands)
-        if test (count $possible_cmd) -eq 1
-            # found a non-ambigious command
-            set argv[1] $possible_cmd[1]
-            set is_valid_cmd 0
-        else if test (count $possible_cmd) -gt 1
-            echo "> Unable to expand '$argv[1]' to a valid command unambigiously"
-            echo "> Matches:"
-            printf "\t%s\n " $possible_cmd
-            return 1
+        if test -n "$argv[1]"
+            # must be non-empty
+            and set -l possible_cmd (string match "$argv[1]*" $__forgit_commands)
+            if test (count $possible_cmd) -eq 1
+                # found a non-ambigious command
+                set argv[1] $possible_cmd[1]
+                set is_valid_cmd 0
+            else if test (count $possible_cmd) -gt 1
+                echo "> Unable to expand '$argv[1]' to a valid command unambigiously"
+                echo "> Matches:"
+                printf "\t%s\n " $possible_cmd
+                return 1
+            end
         end
     end
     
