@@ -12,7 +12,7 @@ set __forgit_commands (string replace --all '::' ' ' $__forgit_commands)
 
 function forgit
     # try to merge arg 1 + 2 as it could be a sub command
-    set -l try_merge (string join " " $argv[1..2])
+    set -l try_merge (string join -- " " $argv[1..2])
     contains -- $try_merge $__forgit_commands
     and set -e argv[1]; and set argv[1] $try_merge
 
