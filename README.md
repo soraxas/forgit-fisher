@@ -61,10 +61,13 @@ COMMAND: add
 
 ### Tips
 
-With this plugin, you can use the `--setup-git-workaround` flag to setup `forgit` as a git subcommand. It has the advantage to inherent git's environmental variables, e.g., it can with `yadm forgit <...>`. Run the following
+With this plugin, you can use the `--setup-git-workaround` flag to setup `forgit` as a git subcommand. It has the advantage to inherent git's environmental variables, e.g., it works with `yadm forgit <...>`. 
+
+Run the following
 ```sh
 forgit --setup-git-workaround
 ```
+if you want to be able to run command as `git forgit <...>`.
 
 Note that I alias my `git` into `g`, and with a git-alias in my `~/.gitconfig` of `forgit=fg`. With the `forgit` subcommand, you can run commands with
 ```sh
