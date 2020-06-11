@@ -32,10 +32,10 @@ function __fish_forgit_needs_command
     set -e cmd[1]
     or return 0
 
-    test "$cmd[1]" = $__FISH_FORGIT_ALIAS_NAME
+    test "$cmd[1]" = "$__FISH_FORGIT_ALIAS_NAME"
     and set -e cmd[1]
     
-    test "$cmd[1]" = forgit
+    test "$cmd[1]" = "forgit"
     and set -e cmd[1]
 
     if set -q cmd[1]
@@ -133,6 +133,9 @@ function forgit
         end 
         return
     end
+
+
+    # allow 
 
     # try to merge arg 1 + 2 as it could be a sub command
     set -l try_merge (string join -- " " $argv[1..2])
