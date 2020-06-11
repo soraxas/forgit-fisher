@@ -3,7 +3,7 @@
     <em>Fisher plugin, utility tool for using git interactively. Powered by <a href="https://github.com/wfxr/forgit">wfxr/forgit</a>.</em>
 </p>
 
-This tool is designed to [forgit](https://github.com/wfxr/forgit). 
+This tool is designed be as a frontend of [forgit](https://github.com/wfxr/forgit). 
 
 For details, please checkout the upstream repository. This plugin had packaged the powerful **forgit** tool into a [fisher plugin](https://github.com/jorgebucaran/fisher
 )
@@ -61,7 +61,10 @@ COMMAND: add
 
 ### Tips
 
-With this plugin, you can use the `--setup-git-workaround` flag to setup `forgit` as a git subcommand. It has the advantage to inherent git's environmental variables, e.g., it can with `yadm forgit <...>`.
+With this plugin, you can use the `--setup-git-workaround` flag to setup `forgit` as a git subcommand. It has the advantage to inherent git's environmental variables, e.g., it can with `yadm forgit <...>`. Run the following
+```sh
+forgit --setup-git-workaround
+```
 
 Note that I alias my `git` into `g`, and with a git-alias in my `~/.gitconfig` of `forgit=fg`. With the `forgit` subcommand, you can run commands with
 ```sh
